@@ -149,16 +149,37 @@ void Matrix4f::InitCameraTransform(const Vector3f& Target, const Vector3f& Up)
     m[3][0] = 0.0f;  m[3][1] = 0.0f;  m[3][2] = 0.0f;  m[3][3] = 1.0f;
 }
 
+//void Matrix4f::InitPersProjTransform(const PersProjInfo& p)
+//{
+//    const float ar         = p.Width / p.Height;
+//    const float zRange     = p.zNear - p.zFar;
+//    const float tanHalfFOV = tanf(ToRadian(p.FOV / 2.0f));
+//
+//    m[0][0] = 1.0f/(tanHalfFOV * ar); m[0][1] = 0.0f;            m[0][2] = 0.0f;            m[0][3] = 0.0;
+//    m[1][0] = 0.0f;                   m[1][1] = 1.0f/tanHalfFOV; m[1][2] = 0.0f;            m[1][3] = 0.0;
+//    m[2][0] = 0.0f;                   m[2][1] = 0.0f;            m[2][2] = (-p.zNear - p.zFar)/zRange ; m[2][3] = 2.0f*p.zFar*p.zNear/zRange;
+//    m[3][0] = 0.0f;                   m[3][1] = 0.0f;            m[3][2] = 1.0f;            m[3][3] = 0.0;    
+//}
+
 void Matrix4f::InitPersProjTransform(const PersProjInfo& p)
 {
-    const float ar         = p.Width / p.Height;
-    const float zRange     = p.zNear - p.zFar;
-    const float tanHalfFOV = tanf(ToRadian(p.FOV / 2.0f));
 
-    m[0][0] = 1.0f/(tanHalfFOV * ar); m[0][1] = 0.0f;            m[0][2] = 0.0f;            m[0][3] = 0.0;
-    m[1][0] = 0.0f;                   m[1][1] = 1.0f/tanHalfFOV; m[1][2] = 0.0f;            m[1][3] = 0.0;
-    m[2][0] = 0.0f;                   m[2][1] = 0.0f;            m[2][2] = (-p.zNear - p.zFar)/zRange ; m[2][3] = 2.0f*p.zFar*p.zNear/zRange;
-    m[3][0] = 0.0f;                   m[3][1] = 0.0f;            m[3][2] = 1.0f;            m[3][3] = 0.0;    
+	const float ar = p.Width / p.Height;
+	const float zRange = p.zNear - p.zFar;
+	const float tanHalfFOV = tanf(ToRadian(p.FOV / 2.0f));
+	
+	const float b = -p.zNear*tanHalfFOV;
+	const float t = p.zNear*tanHalfFOV;
+	const float l = -p.zNear*tanHalfFOV*ar;
+	const float r = p.zNear*tanHalfFOV*ar;
+
+
+
+	m[0][0] = 2 * p.zNear / (r - l);		m[0][1] = 0.0f;						m[0][2] = -(r + l) / (r - l);			m[0][3] = 0.0f;
+	m[1][0] = 0.0f;							m[1][1] = 2 * p.zNear / (t - b);	m[1][2] = -(t + b) / (t - b);			m[1][3] = 0.0f;
+	m[2][0] =0.0f;							m[2][1] = 0.0f;		m[2][2] = (p.zNear + p.zFar) / (p.zFar - p.zNear);		m[2][3] = -2.0f*p.zFar*p.zNear / (p.zFar - p.zNear);
+	m[3][0] = 0.0f;							m[3][1] = 0.0f;						m[3][2] = 1.0f;							m[3][3] = 0.0f;
+
 }
 
 
