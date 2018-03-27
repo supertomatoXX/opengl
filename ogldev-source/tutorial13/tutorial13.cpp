@@ -59,6 +59,7 @@ static void RenderSceneCB()
     p.SetCamera(*pGameCamera);
     p.SetPerspectiveProj(gPersProjInfo);
 
+	//´Ë´¦ÓÐgetwmprans
     glUniformMatrix4fv(gWVPLocation, 1, GL_TRUE, (const GLfloat*)p.GetWVPTrans());
 
     glEnableVertexAttribArray(0);
