@@ -54,6 +54,8 @@ static void RenderSceneCB()
     p.WorldPos(0.0f, 0.0f, 5.0f);
     p.SetPerspectiveProj(gPersProjInfo);
 
+
+	//´Ë´¦ÓÐgetwptrans
     glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, (const GLfloat*)p.GetWPTrans());
 
     glEnableVertexAttribArray(0);
@@ -201,8 +203,9 @@ int main(int argc, char** argv)
     gPersProjInfo.FOV = 30.0f;
     gPersProjInfo.Height = WINDOW_HEIGHT;
     gPersProjInfo.Width = WINDOW_WIDTH;
-    gPersProjInfo.zNear = 1.0f;
-    gPersProjInfo.zFar = 100.0f;
+	gPersProjInfo.zNear = 1.0f;
+	gPersProjInfo.zFar = 100.0f;
+
 	                
     glutMainLoop();
 
