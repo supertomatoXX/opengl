@@ -51,10 +51,12 @@ bool ShadowMapFBO::Init(unsigned int WindowWidth, unsigned int WindowHeight)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+	//当我们使用GL_FRAMEBUFFER时，FBO的读写状态都会被更新，建议这样初始化FBO
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_shadowMap, 0);
 
     // Disable writes to the color buffer
+	//因为我们在第一次渲染过程中禁止把数据写入颜色缓存，所以就没用到片元着色器。
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
 

@@ -214,6 +214,7 @@ int main(int argc, char** argv)
 
     InitializeGlutCallbacks();
 
+	//中文教程有问题 
     pGameCamera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Must be done after glut is initialized!

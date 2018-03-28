@@ -75,6 +75,7 @@ void Camera::Init()
         }
         else
         {
+			//中文翻译版有问题   m_AngleH = 90.0f + ToDegree(asin(-HTarget.z));
             m_AngleH = 180.0f - ToDegree(asin(-HTarget.z));
         }
     }
