@@ -86,6 +86,7 @@ public:
         }        
         
         m_pShadowMapTech->Enable();
+
        
         m_pQuad = new Mesh();
         
@@ -108,7 +109,7 @@ public:
         m_pGameCamera->OnRender();
         m_scale += 0.05f;
 
-        ShadowMapPass();
+		ShadowMapPass();
         RenderPass();
         
         glutSwapBuffers();
