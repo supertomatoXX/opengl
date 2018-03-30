@@ -93,7 +93,7 @@ public:
               
         m_pGround = new Mesh();
         
-        if (!m_pGround->LoadMesh("quad.obj")) {
+        if (!m_pGround->LoadMesh("../Content/quad.obj")) {
             return false;
         }
         
