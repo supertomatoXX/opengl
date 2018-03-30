@@ -51,10 +51,16 @@ const Matrix4f& Pipeline::GetViewTrans()
     Matrix4f CameraTranslationTrans, CameraRotateTrans;
 
 	//M1*V1 = M2 * V2    v2 = M2(-1)*M1*V1   M1 = E  V2 = M2(-1)*V1  正交变货  V2=M2(T)*V1
-	//E*V1 = RT*V2  V2 = (RT)(-1)*V1    V2 =  T(-1)*R(-1)*V1 = T(-1)*R(T)*V1
+	//E*V1 = TR*V2  V2 = (TR)(-1)*V1    V2 =  R(-1)*T(-1)*V1 = R(T)*T(-1)*V1
 	//T(-1)  -Tx  -Ty -Tz
 	//R(T)  行运算 还是 列运算
     CameraTranslationTrans.InitTranslationTransform(-m_camera.Pos.x, -m_camera.Pos.y, -m_camera.Pos.z);
+
+	//列储存，转置成行储存
+	//ux uy uz 0       1 0 0 -Tx        ux uy uz -U*T
+	//vx vy vz 0   *   0 1 0 -Ty    =   vx vy vz -V*T
+	//nx ny nz 0       0 0 1 -Tz        nx ny nz -N*T
+	//0  0  0  1       0 0 0  1         0  0  0   1
     CameraRotateTrans.InitCameraTransform(m_camera.Target, m_camera.Up);
     
     m_Vtransformation = CameraRotateTrans * CameraTranslationTrans;
