@@ -221,3 +221,49 @@ int main(int argc, char** argv)
  
     return 0;
 }
+
+/*
+将tangent向量传入到顶点着色器中；
+将tangent向量变换到世界坐标系中并传入到片元着色器；
+在片元着色器中使用tangent向量和法线向量（都处于世界坐标系下）来计算出bitangent向量；
+通过tangent-bitangent-normal矩阵生成一个将法线信息变换到世界坐标系中的变换矩阵；
+从法线纹理中采样得到法线信息；
+通过使用上述的矩阵将法线信息变换到世界坐标系中；
+继续和往常一样进行光照计算。
+*/
+
+/* 生成 T与B的过程
+for (unsigned int i = 0 ; i < Indices.size() ; i += 3) {
+    Vertex& v0 = Vertices[Indices[i]];
+    Vertex& v1 = Vertices[Indices[i+1]];
+    Vertex& v2 = Vertices[Indices[i+2]];
+
+    Vector3f Edge1 = v1.m_pos - v0.m_pos;
+    Vector3f Edge2 = v2.m_pos - v0.m_pos;
+
+    float DeltaU1 = v1.m_tex.x - v0.m_tex.x;
+    float DeltaV1 = v1.m_tex.y - v0.m_tex.y;
+    float DeltaU2 = v2.m_tex.x - v0.m_tex.x;
+    float DeltaV2 = v2.m_tex.y - v0.m_tex.y;
+
+    float f = 1.0f / (DeltaU1 * DeltaV2 - DeltaU2 * DeltaV1);
+
+    Vector3f Tangent, Bitangent;
+
+    Tangent.x = f * (DeltaV2 * Edge1.x - DeltaV1 * Edge2.x);
+    Tangent.y = f * (DeltaV2 * Edge1.y - DeltaV1 * Edge2.y);
+    Tangent.z = f * (DeltaV2 * Edge1.z - DeltaV1 * Edge2.z);
+
+    Bitangent.x = f * (-DeltaU2 * Edge1.x - DeltaU1 * Edge2.x);
+    Bitangent.y = f * (-DeltaU2 * Edge1.y - DeltaU1 * Edge2.y);
+    Bitangent.z = f * (-DeltaU2 * Edge1.z - DeltaU1 * Edge2.z);
+
+    v0.m_tangent += Tangent;
+    v1.m_tangent += Tangent;
+    v2.m_tangent += Tangent;
+}
+
+for (unsigned int i = 0 ; i < Vertices.size() ; i++) {
+    Vertices[i].m_tangent.Normalize();
+}
+*/
