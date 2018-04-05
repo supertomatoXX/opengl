@@ -127,6 +127,10 @@ vec4 CalcSpotLight(SpotLight l, vec3 Normal, vec4 LightSpacePos)
         return vec4(0,0,0,0);                                                               
     }                                                                                       
 }                                                                                           
+
+
+//法线信息的存储方式与颜色一样，所以它的每个分量都处于[0，1]的范围之间。
+//所以我们需要通过函数’f(x) = 2 * x - 1’将法线信息变换回它的原始形式。这个函数将0映射到-1，将1映射到 1。
                                                                                             
 vec3 CalcBumpedNormal()                                                                     
 {                                                                                           
