@@ -74,6 +74,8 @@ bool ParticleSystem::InitParticleSystem(const Vector3f& Pos)
     Particles[0].Vel = Vector3f(0.0f, 0.0001f, 0.0f);
     Particles[0].LifetimeMillis = 0.0f;
 
+
+    //使用feedback包起两个vb
     glGenTransformFeedbacks(2, m_transformFeedback);    
     glGenBuffers(2, m_particleBuffer);
     
@@ -129,6 +131,7 @@ void ParticleSystem::Render(int DeltaTimeMillis, const Matrix4f& VP, const Vecto
 
     RenderParticles(VP, CameraPos);
 
+    //渲染与及更新的两个feedback之间的切换
     m_currVB = m_currTFB;
     m_currTFB = (m_currTFB + 1) & 0x1;
 }
@@ -142,6 +145,7 @@ void ParticleSystem::UpdateParticles(int DeltaTimeMillis)
    
     m_randomTexture.Bind(RANDOM_TEXTURE_UNIT);
     
+    //阻断光栅化流程，所有东西输出到feedback中，
     glEnable(GL_RASTERIZER_DISCARD);
     
     glBindBuffer(GL_ARRAY_BUFFER, m_particleBuffer[m_currVB]);    
@@ -157,6 +161,15 @@ void ParticleSystem::UpdateParticles(int DeltaTimeMillis)
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)16);        // velocity
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)28);          // lifetime
     
+    //有趣的部分来了。我们调用glBeginTransformFeedback()函数来激活transform feedback。在这之后的所有绘制的结果（
+    //直到glTransformFeedback()被调用）都会被输入到当前的transform feedback缓存中（根据当前绑定的transform feedback对象）。
+    //这个函数需要一个拓扑结构变量作为参数。由于Transform feedback工作的方式，只有完整的图元才能被写入到缓存中。
+    //这个意思就是如果你绘制四个顶点（其拓扑结构是triangle strip），或者六个顶点（其拓扑结构是triangle list），
+    //不论你使用哪种方式最后输入到这个缓存中的数据都将是六个顶点（两个三角形）。对于这个函数的参数可以是下面这几个：
+
+    //GL_POINTS - the draw call topology must also be GL_POINTS.
+    //GL_LINES - the draw call topology must be GL_LINES, GL_LINE_LOOP or GL_LINE_STRIP.
+    //GL_TRIANGLES - the draw call topology must be GL_TRIANGLES, GL_TRIANGLE_STRIP or GL_TRIANGLE_FAN.
     glBeginTransformFeedback(GL_POINTS);
 
     if (m_isFirst) {
@@ -183,7 +196,7 @@ void ParticleSystem::RenderParticles(const Matrix4f& VP, const Vector3f& CameraP
     m_billboardTechnique.SetCameraPosition(CameraPos);
     m_billboardTechnique.SetVP(VP);
     m_pTexture->Bind(COLOR_TEXTURE_UNIT);
-    
+    //恢复正常的光栅化，进行渲染.
     glDisable(GL_RASTERIZER_DISCARD);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_particleBuffer[m_currTFB]);    
