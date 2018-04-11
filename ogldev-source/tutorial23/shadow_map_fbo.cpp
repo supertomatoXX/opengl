@@ -48,15 +48,17 @@ bool ShadowMapFBO::Init(unsigned int WindowWidth, unsigned int WindowHeight)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, WindowWidth, WindowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //我们告诉OpenGL如果纹理坐标越界，需要将其截断到[0，1]之间。当以相机为视口的投影窗口超过以光源为视口的投影窗口时会发生纹理坐标越界。
+    //为了避免不好的现象比如由于wraparound的原因阴影在别的地方重复出现，我们要截断纹理坐标。 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	//������ʹ��GL_FRAMEBUFFERʱ��FBO�Ķ�д״̬���ᱻ���£�����������ʼ��FBO
+	//µ±ÎÒÃÇÊ¹ÓÃGL_FRAMEBUFFERÊ±£¬FBOµÄ¶ÁÐ´×´Ì¬¶¼»á±»¸üÐÂ£¬½¨ÒéÕâÑù³õÊ¼»¯FBO
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_shadowMap, 0);
 
     // Disable writes to the color buffer
-	//��Ϊ�����ڵ�һ����Ⱦ�����н�ֹ������д����ɫ���棬���Ծ�û�õ�ƬԪ��ɫ����
+	//ÒòÎªÎÒÃÇÔÚµÚÒ»´ÎäÖÈ¾¹ý³ÌÖÐ½ûÖ¹°ÑÊý¾ÝÐ´ÈëÑÕÉ«»º´æ£¬ËùÒÔ¾ÍÃ»ÓÃµ½Æ¬Ôª×ÅÉ«Æ÷¡£
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
 
