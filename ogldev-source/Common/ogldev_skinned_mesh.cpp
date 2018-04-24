@@ -162,6 +162,8 @@ bool SkinnedMesh::InitFromScene(const aiScene* pScene, const string& Filename)
     glEnableVertexAttribArray(NORMAL_LOCATION);
     glVertexAttribPointer(NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
+	//需要特别注意的是在绑定 ID 信息时我们应该使用 glVertexAttribIPointer 函数而不是 glVertexAttribPointer ，
+	//这是因为 ID 是整型数据而不是浮点类型数据，如果不注意这点，会使传递到着色器中的数据出现问题。
    	glBindBuffer(GL_ARRAY_BUFFER, m_Buffers[BONE_VB]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Bones[0]) * Bones.size(), &Bones[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(BONE_ID_LOCATION);
@@ -229,6 +231,9 @@ void SkinnedMesh::LoadBones(uint MeshIndex, const aiMesh* pMesh, vector<VertexBo
             BoneIndex = m_BoneMapping[BoneName];
         }                      
         
+
+		//需要注意的是这里的顶点 ID 是如何计算出来的，由于骨骼对象中保存的顶点 ID 是相对与单个 aiMesh 对象来说的，
+		//但是我们是将所有 aiMesh 对象的顶点都保存在同一个向量中的，所以我们这里先获得当前 aiMesh 对象的基础顶点索引再加上当前从骨骼对象中获取的顶点 ID 就能得到真正的顶点 ID 了。
         for (uint j = 0 ; j < pMesh->mBones[i]->mNumWeights ; j++) {
             uint VertexID = m_Entries[MeshIndex].BaseVertex + pMesh->mBones[i]->mWeights[j].mVertexId;
             float Weight  = pMesh->mBones[i]->mWeights[j].mWeight;                   
