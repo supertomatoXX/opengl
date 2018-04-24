@@ -88,6 +88,11 @@ bool Mesh::LoadMesh(const string& Filename)
     return Ret;
 }
 
+
+//glVertexAttribDivisor() 函数表面这个属性是实例数据而不是普通的顶点数据，它需要两个参数 —— 第一个参数是属性位置，第二个参数是告诉 OpenGL 在进行实例渲染时实例数据更新的速率，
+//它的基本意义就是在更新实例数据之前会完成多少次顶点数据的渲染。默认情况下 divisor 的值为 0，这种情况下每渲染一个顶点就会对实例数据进行一次更新，
+//如果将这个值设置为 10，这表示前 10 个实例会使用这个缓存中的第一个数据，之后的实例会使用第二个数据，以此类推。因为我们希望的是每个对每个实例使用一个 WVP 矩阵，
+//所有我们将这个值设置为 1。
 bool Mesh::InitFromScene(const aiScene* pScene, const string& Filename)
 {  
     m_Entries.resize(pScene->mNumMeshes);
@@ -249,7 +254,17 @@ bool Mesh::InitMaterials(const aiScene* pScene, const string& Filename)
     return Ret;
 }
 
+//在这里我们调用 glDrawElementsInstancedBaseVertex（）函数而不是 glDrawElementsBaseVertex（）函数来进行绘制，
+//他们的唯一区别就是这个函数用第五个参数来确定需要绘制的实例个数，这意味着组成模型的索引数据（根据其他参数确定）会被重复复制 NumInstances 次。
 
+//对于每个顶点， OpenGL 会从那些 divisor 设置为 0 的顶点缓存中获取新的数据。而对于 divisor 设置为 1 的缓存，只有当一个完整的实例绘制完之后才会从它里面获取新的数据，
+//这个绘制命令的大致算法可以看做如下：
+
+//for (i = 0; i < NumInstances; i++)
+//	if (i mod divisor == 0)
+//		fetch attribute i / divisor from VBs with instance data
+//for (j = 0; j < NumVertices; j++)
+//			fetch attribute j from VBs with vertex data
 void Mesh::Render(unsigned int NumInstances, const Matrix4f* WVPMats, const Matrix4f* WorldMats)
 {        
     glBindBuffer(GL_ARRAY_BUFFER, m_Buffers[WVP_MAT_VB]);
