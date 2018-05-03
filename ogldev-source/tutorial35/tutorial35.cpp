@@ -131,7 +131,8 @@ public:
     }
      
     void DSLightPass()
-    {       
+    {   
+		//恢复默认缓存，以方便glblitframebuff拷贝到默认缓冲区
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -141,6 +142,7 @@ public:
         GLint HalfWidth = (GLint)(WINDOW_WIDTH / 2.0f);
         GLint HalfHeight = (GLint)(WINDOW_HEIGHT / 2.0f);
         
+		//遂个设置拷贝源，然后再拷贝到默认缓冲区中
         m_gbuffer.SetReadBuffer(GBuffer::GBUFFER_TEXTURE_TYPE_POSITION);
         glBlitFramebuffer(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, HalfWidth, HalfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
