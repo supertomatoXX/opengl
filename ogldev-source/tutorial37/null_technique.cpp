@@ -22,6 +22,7 @@
 #include "null_technique.h"
 #include "ogldev_util.h"
 
+//VS 只是将位置向量通过 WVP 矩阵变换到规范化空间中，FS 则什么都没有做，因为我们并不需要更新颜色缓存，需要更新的仅仅是模板缓存，所以我们仅仅是需要进入到光栅化阶段而已。
 NullTechnique::NullTechnique()
 {   
 }

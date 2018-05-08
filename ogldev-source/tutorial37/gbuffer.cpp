@@ -70,11 +70,14 @@ bool GBuffer::Init(unsigned int WindowWidth, unsigned int WindowHeight)
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_textures[i], 0);
     }
 
+
+	////GL_DEPTH32F_STENCIL8, 这样每个像素中会有一个字节用于存放模板信息。并且深度缓存被挂在到 FBO 的 GL_DEPTH_STENCIL_ATTACHMENT 上而不是 GL_DEPTH_COMPONENT。
 	// depth
 	glBindTexture(GL_TEXTURE_2D, m_depthTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, WindowWidth, WindowHeight, 0, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV, NULL);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depthTexture, 0);
 
+	
 	// final
 	glBindTexture(GL_TEXTURE_2D, m_finalTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WindowWidth, WindowHeight, 0, GL_RGB, GL_FLOAT, NULL);
@@ -113,7 +116,7 @@ void GBuffer::BindForGeomPass()
     glDrawBuffers(ARRAY_SIZE_IN_ELEMENTS(DrawBuffers), DrawBuffers);
 }
 
-
+//在模板测试的时候我们只会向模板缓存中写入数据而不会向颜色缓存中写入，而且我们 FS 都是空的，但尽管是这样 FS 的默认输出也是黑色，为了避免这个问题我们在这里禁用颜色输出。
 void GBuffer::BindForStencilPass()
 {
     // must disable the draw buffers 
@@ -132,7 +135,7 @@ void GBuffer::BindForLightPass()
 	}
 }
 
-
+//当程序运行到 FinalPass 时，finalTexture 中早已保存了场景最终的渲染结果，这里我们为 Blit 操作进行设置，默认 FBO 设置为输出目标，GBuffer 的 FBO 设置为输入。
 void GBuffer::BindForFinalPass()
 {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
